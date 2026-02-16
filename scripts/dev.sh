@@ -18,6 +18,16 @@ if ! command -v docker >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! command -v ssh-keygen >/dev/null 2>&1; then
+  echo "ssh-keygen is required but not found. Install OpenSSH and try again." >&2
+  exit 1
+fi
+
+if ! command -v openssl >/dev/null 2>&1; then
+  echo "openssl is required but not found. Install OpenSSL and try again." >&2
+  exit 1
+fi
+
 if [[ ! -f "$ROOT_DIR/backend/.env" ]]; then
   if [[ -f "$ROOT_DIR/backend/.env.example" ]]; then
     echo "Backend .env not found. Creating from .env.example."
@@ -36,6 +46,32 @@ if [[ ! -f "$ROOT_DIR/frontend/.env.local" ]]; then
     echo "Frontend .env.local not found and .env.local.example is missing." >&2
     exit 1
   fi
+fi
+
+if [[ ! -d "$ROOT_DIR/backend/node_modules" ]]; then
+  echo "Installing backend dependencies..."
+  (
+    cd "$ROOT_DIR/backend"
+    pnpm install
+  )
+fi
+
+if [[ ! -d "$ROOT_DIR/frontend/node_modules" ]]; then
+  echo "Installing frontend dependencies..."
+  (
+    cd "$ROOT_DIR/frontend"
+    npm install
+  )
+fi
+
+if [[ ! -f "$ROOT_DIR/backend/keys/jwt.private.pem" || ! -f "$ROOT_DIR/backend/keys/jwt.public.pem" ]]; then
+  echo "Generating backend JWT keys..."
+  (
+    cd "$ROOT_DIR/backend"
+    mkdir -p keys
+    ssh-keygen -t rsa -b 4096 -m PEM -f keys/jwt.private.pem -N ""
+    openssl rsa -in keys/jwt.private.pem -pubout -outform PEM -out keys/jwt.public.pem
+  )
 fi
 
 echo "Starting backend dependencies (Postgres/Redis)..."
