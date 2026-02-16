@@ -1,0 +1,6 @@
+[submodule "frontend"]
+	path = frontend
+	url = git@github.com:matthias-van-der-galien/eam-frontend.git
+[submodule "backend"]
+	path = backend
+	url = git@github.com:matthias-van-der-galien/eam-backend.git
