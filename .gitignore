@@ -1,0 +1,10 @@
+# Workspace noise
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Local env files
+.env
+.env.local
+.env.*.local
