@@ -17,3 +17,44 @@ This repository is a unified workspace that hosts the EAM platform frontend and 
 
 - Frontend docs: [frontend/README.md](frontend/README.md)
 - Backend docs: [backend/README.md](backend/README.md)
+
+## Local full-stack run (ports: backend 8000, frontend 3000)
+
+Use the helper script to start everything at once (it will create local env files from the examples if missing):
+
+```bash
+chmod +x ./scripts/dev.sh
+./scripts/dev.sh
+```
+
+### Backend
+
+```bash
+cd backend
+cp .env.example .env
+pnpm install
+pnpm docker:up
+pnpm db:migrate
+pnpm dev:api
+```
+
+In another terminal:
+
+```bash
+cd backend
+pnpm dev:worker
+```
+
+### Frontend
+
+```bash
+cd frontend
+cp .env.local.example .env.local
+npm install
+npm run dev
+```
+
+Verify:
+
+- API health: http://localhost:8000/health
+- Frontend: http://localhost:3000
